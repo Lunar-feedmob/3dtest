@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>现代舒适住宅 · 3D 样板间</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background: #0b0e13; }
+  #app { position: fixed; inset: 0; }
+  canvas { display: block; }
+
+  #topbar {
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 8px; align-items: center; padding: 8px 10px;
+    background: rgba(18, 22, 30, 0.72); backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; z-index: 20;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+  }
+  #topbar .title { color: #e8e2d6; font-size: 13px; letter-spacing: 1px; padding: 0 10px 0 6px; border-right: 1px solid rgba(255,255,255,0.15); margin-right: 4px; white-space: nowrap; }
+  #topbar button {
+    border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.06);
+    color: #d8d4cc; font-size: 12px; padding: 8px 14px; border-radius: 9px; cursor: pointer;
+    transition: all .18s ease; white-space: nowrap;
+  }
+  #topbar button:hover { background: rgba(255,255,255,0.14); color: #fff; }
+  #topbar button.active { background: #c9a06a; border-color: #c9a06a; color: #171310; font-weight: 600; }
+
+  #hint {
+    position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+    color: #cfc9bd; font-size: 12px; letter-spacing: .5px; padding: 9px 18px;
+    background: rgba(18,22,30,0.66); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 999px; backdrop-filter: blur(10px); z-index: 20; white-space: nowrap;
+  }
+  #crosshair {
+    position: fixed; left: 50%; top: 50%; width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px;
+    border-radius: 50%; background: rgba(255,255,255,0.85); box-shadow: 0 0 6px rgba(0,0,0,.6);
+    z-index: 15; display: none; pointer-events: none;
+  }
+  #lockTip {
+    position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 30;
+    background: radial-gradient(ellipse at center, rgba(10,12,18,0.25), rgba(10,12,18,0.65));
+    pointer-events: none;
+  }
+  #lockTip .card {
+    text-align: center; color: #efe9dd; padding: 26px 44px; border-radius: 18px;
+    background: rgba(16,19,26,0.8); border: 1px solid rgba(255,255,255,0.14); backdrop-filter: blur(12px);
+  }
+  #lockTip .card h2 { font-size: 20px; font-weight: 600; letter-spacing: 2px; margin-bottom: 10px; }
+  #lockTip .card p { font-size: 13px; color: #b9b3a7; line-height: 1.9; }
+  #lockTip .card .k { display: inline-block; min-width: 22px; padding: 2px 7px; margin: 0 3px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.08); color: #fff; font-size: 12px; }
+
+  #planOverlay {
+    position: fixed; inset: 0; z-index: 40; display: none; align-items: center; justify-content: center;
+    background: rgba(8,10,14,0.88); backdrop-filter: blur(6px);
+  }
+  #planOverlay .inner { max-width: min(92vw, 1200px); text-align: center; }
+  #planOverlay img { max-width: 100%; max-height: 82vh; border-radius: 10px; box-shadow: 0 20px 70px rgba(0,0,0,.6); background: #fff; }
+  #planOverlay .cap { color: #cfc9bd; margin-top: 12px; font-size: 13px; letter-spacing: 2px; }
+
+  #roomLabel {
+    position: fixed; top: 76px; left: 50%; transform: translateX(-50%);
+    color: #e9ddc8; font-size: 13px; letter-spacing: 3px; padding: 6px 16px; border-radius: 999px;
+    background: rgba(201,160,106,0.18); border: 1px solid rgba(201,160,106,0.45);
+    z-index: 20; display: none; backdrop-filter: blur(8px);
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<div id="topbar">
+  <span class="title">现代舒适住宅 · 3D 样板间</span>
+  <button id="btnFP" class="active">第一人称</button>
+  <button id="btnBird">鸟瞰视角</button>
+  <button id="btnAxo">轴测展示</button>
+  <button id="btnPlan">2D 户型图</button>
+  <button id="btnLight">夜晚灯光</button>
+</div>
+
+<div id="roomLabel"></div>
+<div id="crosshair"></div>
+
+<div id="lockTip">
+  <div class="card">
+    <h2>点击进入房屋</h2>
+    <p>
+      <span class="k">W</span><span class="k">A</span><span class="k">S</span><span class="k">D</span> 移动 &nbsp;·&nbsp; 鼠标 环顾四周 &nbsp;·&nbsp; <span class="k">Shift</span> 快走<br/>
+      <span class="k">Esc</span> 退出鼠标锁定 &nbsp;·&nbsp; 数字键 <span class="k">1</span><span class="k">2</span><span class="k">3</span><span class="k">4</span> 切换视角
+    </p>
+  </div>
+</div>
+
+<div id="planOverlay">
+  <div class="inner">
+    <img src="assets/floorplan.png" alt="住宅平面设计图" />
+    <div class="cap">住宅平面设计图 · 1:80 · 单位：毫米</div>
+  </div>
+</div>
+
+<div id="hint">WASD 移动 · 鼠标环顾 · Esc 退出 · 1/2/3/4 切换视角</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
