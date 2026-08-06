@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js'
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js'
 import { SSAOPass } from 'three/addons/postprocessing/SSAOPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
 
@@ -34,6 +35,7 @@ export function createApp() {
   scene.add(ground)
 
   const composer = new EffectComposer(renderer)
+  composer.addPass(new RenderPass(scene, camera))
   const ssao = new SSAOPass(scene, camera, window.innerWidth, window.innerHeight)
   ssao.kernelRadius = 0.4
   ssao.minDistance = 0.0005
