@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>250㎡ 数字样板间 · 3D 豪宅展示</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;background:#101014}
+  #app{position:fixed;inset:0}
+  #topbar{position:fixed;top:12px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;
+    padding:8px 14px;border-radius:14px;background:rgba(18,18,22,.58);backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,.12);z-index:10;white-space:nowrap}
+  #brand{font-size:14px;font-weight:600;color:#e8d9bd;margin-right:8px;letter-spacing:.5px}
+  #topbar button{padding:7px 14px;border-radius:9px;border:1px solid rgba(255,255,255,.18);
+    background:rgba(255,255,255,.08);color:#eee;cursor:pointer;font-size:13px;transition:.2s}
+  #topbar button:hover{background:rgba(255,255,255,.16)}
+  #topbar button.active{background:#c8a06a;color:#201a12;border-color:transparent;font-weight:600}
+  #hint{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);padding:8px 16px;border-radius:10px;
+    background:rgba(18,18,22,.55);backdrop-filter:blur(10px);color:#cfc8ba;font-size:12px;z-index:10}
+  #crosshair{position:fixed;top:50%;left:50%;width:5px;height:5px;margin:-2.5px;border-radius:50%;
+    background:rgba(255,255,255,.85);box-shadow:0 0 6px rgba(0,0,0,.6);z-index:9;display:none}
+  #planOverlay{position:fixed;inset:0;background:rgba(12,12,16,.78);backdrop-filter:blur(6px);
+    display:flex;align-items:center;justify-content:center;z-index:20}
+  #planBox{background:#f7f3ea;border-radius:16px;padding:18px 20px;max-width:94vw;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  #planBox h3{margin:0 0 10px;font-size:15px;color:#4a3f2e;display:flex;justify-content:space-between;align-items:center;gap:20px}
+  #planClose{padding:6px 14px;border:none;border-radius:8px;background:#c8a06a;color:#201a12;font-size:12px;cursor:pointer}
+  #planSrc{padding:6px 14px;border:none;border-radius:8px;background:#e8e2d4;color:#5a4c36;font-size:12px;cursor:pointer}
+  #planCanvas{display:block;width:min(88vw,960px);border-radius:8px;cursor:pointer}
+  #planImg{display:block;width:min(88vw,960px);border-radius:8px}
+  #roomList{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;max-width:min(88vw,960px)}
+  #roomList button{padding:5px 11px;border-radius:999px;border:1px solid #d5c9b2;background:#fff;color:#5a4c36;
+    font-size:12px;cursor:pointer}
+  #roomList button:hover{background:#c8a06a;color:#fff;border-color:#c8a06a}
+  #loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;
+    gap:14px;background:#101014;color:#d8cfc0;z-index:30;font-size:14px;letter-spacing:2px}
+  .spin{width:34px;height:34px;border-radius:50%;border:3px solid rgba(200,160,106,.25);border-top-color:#c8a06a;animation:sp 1s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+</style>
+  <script type="module" crossorigin src="./assets/index-B_ujhDtP.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<div id="topbar">
+  <span id="brand">250㎡ 数字样板间</span>
+  <button data-mode="fp" class="active">第一人称</button>
+  <button data-mode="bird">鸟瞰图</button>
+  <button data-mode="axo">建筑轴测图</button>
+  <button data-mode="plan">2D户型图</button>
+  <button id="daynight">切换夜晚</button>
+</div>
+<div id="hint">WASD 移动 · 鼠标控制视角 · Shift 加速 · 点击画面锁定鼠标 · ESC 释放</div>
+<div id="crosshair"></div>
+<div id="planOverlay" hidden>
+  <div id="planBox">
+    <h3>户型平面图 · 点击房间进入<span style="display:flex;gap:8px"><button id="planSrc">原始户型图</button><span id="planClose">返回 3D</span></span></h3>
+    <canvas id="planCanvas" width="960" height="720"></canvas>
+    <img id="planImg" src="./textures/floorplan.png" alt="原始户型图" hidden />
+    <div id="roomList"></div>
+  </div>
+</div>
+<div id="loading"><div class="spin"></div>正在构建 3D 样板间…</div>
+</body>
+</html>
